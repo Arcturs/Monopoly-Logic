@@ -4,6 +4,8 @@ import ru.vsu.csf.Sashina.game.GameBoard;
 import ru.vsu.csf.Sashina.player.Player;
 import ru.vsu.csf.Sashina.streets.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Cell{

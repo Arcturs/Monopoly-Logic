@@ -3,6 +3,9 @@ package ru.vsu.csf.Sashina.cell;
 import ru.vsu.csf.Sashina.game.GameBoard;
 import ru.vsu.csf.Sashina.player.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChanceCell extends Cell{
     private List<String> messages = new ArrayList<>();
 

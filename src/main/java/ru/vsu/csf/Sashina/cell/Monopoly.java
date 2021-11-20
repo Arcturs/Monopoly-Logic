@@ -12,12 +12,6 @@ public class Monopoly {
     private Cell street2;
     private Cell street3;
 
-    public Monopoly(Cell street1, Cell street2) {
-        this.colour = street1.getColouredStreet().getColour();
-        this.street1 = street1;
-        this.street2 = street2;
-    }
-
     public Monopoly(List<Cell> list) {
         this.colour = list.get(0).getStreet().getColour();
         this.street1 = list.get(0);
@@ -38,11 +32,13 @@ public class Monopoly {
     }
 
     public boolean isCompleted () {
-        if (street3 == null) return street1.getColouredStreet().isHotelBuilt() && street2.getColouredStreet().isHotelBuilt();
-        else return street1.getColouredStreet().isHotelBuilt() && street2.getColouredStreet().isHotelBuilt() && street3.getColouredStreet().isHotelBuilt();
+        if (street3 != null)
+            return street1.getColouredStreet().isHotelBuilt() && street2.getColouredStreet().isHotelBuilt() && street3.getColouredStreet().isHotelBuilt();
+        return street1.getColouredStreet().isHotelBuilt() && street2.getColouredStreet().isHotelBuilt();
     }
 
     public boolean hasAnyHouse () {
+        //замес таков, что я очень надеюсь, что можно будет передавать прямо улицу
         if (street3 != null) return street1.getColouredStreet().isHouse() || street2.getColouredStreet().isHouse()
                 || street3.getColouredStreet().isHouse();
         else return street1.getColouredStreet().isHouse() || street2.getColouredStreet().isHouse();
