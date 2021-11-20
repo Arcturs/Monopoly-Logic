@@ -11,8 +11,8 @@ public class Cell{
     private final TypeOfCell type;
     private final int position;
 
-    private ColouredStreet street;
-    private OtherStreet otherStreet;
+    private Streets street;
+    private ColouredStreet colouredStreet;
 
     public Cell (TypeOfCell type, int number) {
         this.type = type;
@@ -36,37 +36,31 @@ public class Cell{
 
     public void setStreet(ColouredStreet street) {
         this.street = street;
-        this.otherStreet = null;
+        colouredStreet = street;
     }
 
     public void setStreet(OtherStreet street) {
-        this.street = null;
-        this.otherStreet = street;
+        this.street = street;
+    }
+
+    public void setStreet(Streets street) {
+        this.street = street;
     }
 
     public TypeOfCell getType() {
         return type;
     }
 
-    public ColouredStreet getColouredStreet() {
+    public Streets getStreet () {
         return street;
     }
 
-    public OtherStreet getOtherStreet() {
-        return otherStreet;
-    }
-
-    public Streets getStreet () {
-        if (isStreetExists()) return street;
-        return otherStreet;
+    public ColouredStreet getColouredStreet () {
+        return colouredStreet;
     }
 
     public int getPosition() {
         return position;
-    }
-
-    public boolean isStreetExists() {
-        return street != null;
     }
 
     public String getName() {
@@ -77,11 +71,16 @@ public class Cell{
         if (type == TypeOfCell.JAIL) return "Jail";
         if (type == TypeOfCell.PUBLIC_TREASURY) return "Public Treasury";
         if (type == TypeOfCell.GO_TO_JAIL) return "Go to jail";
-        if (isStreetExists()) return street.getName();
-        return otherStreet.getName();
+        return street.getName();
     }
 
     public void doAction (GameBoard gb, Player player, int dice) {}
 
-    public String getMessage() {return "";}
+    public List<String> getMessages() {return new ArrayList<>();}
+
+    public int[] sendAnswer() {
+        return new int[]{};
+    }
+
+    public void getAnswer(int answer) {}
 }
