@@ -65,7 +65,14 @@ public class ColouredStreet extends Streets{
         setRent(getPriceWithHotel());
     }
 
-    public void sellHousesAndHotel() {
+    @Override
+    public void buy() {
+        levelUpMonopoly();
+        setRent(getRent() * 2);
+    }
+
+    @Override
+    public void bailOther() {
         setMonopolyLevel(0);
         setHotel(false);
         setHouse(false);

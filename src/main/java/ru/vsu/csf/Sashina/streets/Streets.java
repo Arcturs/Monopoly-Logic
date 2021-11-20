@@ -55,11 +55,6 @@ public class Streets {
         monopolyLevel--;
     }
 
-    public void decreaseStreetLevel() {
-        monopolyLevel--;
-        setRent(getRent() / 2);
-    }
-
     public void setMonopolyLevel(int level) {
         this.monopolyLevel = level;
     }
@@ -102,9 +97,9 @@ public class Streets {
     }
 
     public void buy () {
-        levelUpMonopoly();
-        setRent(getRent() * 2);
     }
+
+    public void bailOther() {}
 
     public void onBail() {
         setMonopolyLevel(0);
