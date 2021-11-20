@@ -66,14 +66,8 @@ public class Cell{
     }
 
     public String getName() {
-        if (type == TypeOfCell.CHANCE) return "Chance";
-        if (type == TypeOfCell.TAX) return "Tax";
-        if (type == TypeOfCell.FREE_STOP) return "Free stop";
-        if (type == TypeOfCell.START) return "Start";
-        if (type == TypeOfCell.JAIL) return "Jail";
-        if (type == TypeOfCell.PUBLIC_TREASURY) return "Public Treasury";
-        if (type == TypeOfCell.GO_TO_JAIL) return "Go to jail";
-        return street.getName();
+        if (type == TypeOfCell.STREET) return street.getName();
+        else return type.getCode();
     }
 
     public void doAction (GameBoard gb, Player player, int dice) {}
