@@ -6,6 +6,7 @@ import ru.vsu.csf.Sashina.streets.Colour;
 import ru.vsu.csf.Sashina.streets.ColouredStreet;
 import ru.vsu.csf.Sashina.streets.OtherStreet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -232,7 +233,7 @@ public class GameBoard {
         this.gameBoard = gameBoard;
     }
 
-    protected void getStreetOnBail (Player player) {
+    public void getStreetOnBail (Player player) {
         if (player.getMonopolyControl().isEmpty() && player.getCash() <= 0) {
             gameBoard = player.bankrupt(gameBoard);
             return;
@@ -248,7 +249,7 @@ public class GameBoard {
         }
     }
 
-    protected void setStreetOnBail (String colour, Player player) {
+    public void setStreetOnBail (String colour, Player player) {
         try {
             Colour c = Colour.fromStringToColour(colour);
             List<Cell> list = player.getMonopolyControl().get(c);
@@ -411,7 +412,7 @@ public class GameBoard {
         return 0;
     }
 
-    protected void bailOrSell (Player player) {
+    public void bailOrSell (Player player) {
         if (player.getMonopolies().isEmpty()) {
             sendMessage("You need to set some streets on bail.");
             getStreetOnBail(player);
@@ -425,7 +426,5 @@ public class GameBoard {
         }
     }
 
-    protected void sendMessage(String message) {}
-
-    public void street (Player player) {}
+    public void sendMessage(String message) {}
 }

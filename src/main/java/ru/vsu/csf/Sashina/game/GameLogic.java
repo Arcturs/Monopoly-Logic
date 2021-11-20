@@ -8,11 +8,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //TODO: механика аукциона и обмена
+//TODO: сделать интерфейс, через который взимодействует консоль
+//TODO: boolean переписать с логическими высказываниями
+//TODO: стратегии???
 
-public class GameLogic extends GameBoard {
+public class GameLogic extends GameBoard{
     private List<Player> players;
 
-    protected void setPlayers(List<Player> players) {
+    public void setPlayers(List<Player> players) {
         this.players = players;
     }
 
@@ -46,65 +49,7 @@ public class GameLogic extends GameBoard {
         player.outOfJail(-15);
     }
 
-    @Override
-    public void street (Player player) {
-        Cell cell = getCell(player.getPosition());
-        Streets street = cell.getStreet();
-        int numbersOfMonopoly = player.getMonopolies().size();
-        if (street.isAvailable()) {
-            String message = java.text.MessageFormat.format("{0} is available and costs {1}M.",
-                    cell.getStreet().getName(), cell.getStreet().getPrice());
-            sendMessage(message);
-            sendMessage("Would you like to buy it?");
-            sendMessage("1) Yes     2) No");
-            sendMessage("Your answer: ");
-            int answer = checkAnswer(1, 2);
-            if (answer == 1) {
-                if (player.getCash() < street.getPrice()) {
-                    sendMessage("You can't afford buying it. Do you want to set some streets on bail?");
-                    sendMessage("1) Yes       2)No");
-                    answer = checkAnswer(1, 2);
-                    if (answer == 2) {
-                        //аукцион
-                        return;
-                    }
-                    else {
-                        while (player.getCash() < street.getPrice() && !player.getMonopolyControl().isEmpty())
-                            bailOrSell(player);
-                        if (player.getCash() < street.getPrice() && player.getMonopolyControl().isEmpty()) {
-                            sendMessage("You still can''t afford it.");
-                            //аукцион
-                            return;
-                        }
-                    }
-                }
-                setGameBoard(player.buyStreet(getGameBoard(), cell, cell.getStreet().getPrice()));
-                if (numbersOfMonopoly < player.getMonopolies().size()) sendMessage("You've got a monopoly!");
-                sendMessage("You bought this street.");
-                return;
-            } else {
-                //аукцион
-            }
-        }
-        if (street.isOccupied() && street.getHolder().equals(player)) {
-            sendMessage("It's your street!");
-        }
-        if (street.isOccupied() && !street.getHolder().equals(player)){
-            Player holder = street.getHolder();
-            if (!street.isOnBail()) {
-                int rent = street.getRent();
-                String message = java.text.MessageFormat.format("You''re on the {0}''s property. You need to pay {1}M.",
-                        street.getHolder().getName(), rent);
-                sendMessage(message);
-
-                holder.getMoney(rent);
-                checkCash(player, rent);
-                player.getMoney(-rent);
-            }
-        }
-    }
-
-    protected void gameMenu (Player player, boolean[] actions) {
+    public void gameMenu (Player player, boolean[] actions) {
         String message = java.text.MessageFormat.format("Player {0}, it''s your turn to move!", player.getName());
         sendMessage(message);
         message = java.text.MessageFormat.format("You have {0}M.", player.getCash());
@@ -143,7 +88,7 @@ public class GameLogic extends GameBoard {
         actions[6] = true;
     }
 
-    protected void actions(int action, Player player, boolean[] actions) {
+    public void actions(int action, Player player, boolean[] actions) {
         switch (action) {
             case 1: break;
             case 2: getStreetOnBail(player);
@@ -166,7 +111,7 @@ public class GameLogic extends GameBoard {
         }
     }
 
-    protected void playGame() {
+    public void playGame() {
         while (players.size() != 1) {
             List<Player> list = new ArrayList<>();
             for (Player player : players) {
@@ -199,11 +144,15 @@ public class GameLogic extends GameBoard {
                     message = java.text.MessageFormat.format("You moved to {0}.", cell.getName());
                     sendMessage(message);
 
-                    if (cell.getType() == TypeOfCell.STREET) street(player);
-                    else {
-                        cell.doAction(getGameBoardObject(), player, n1 + n2);
-                        if (!cell.getMessage().isEmpty()) sendMessage(cell.getMessage());
+                    cell.doAction(getGameBoardObject(), player, n1 + n2);
+                    int[] array = cell.sendAnswer();
+                    if (array.length != 0 && array[1] != 0 && array[0] != 0) {
+                        if (!cell.getMessages().isEmpty())
+                            cell.getMessages().forEach(this::sendMessage);
+                        cell.getAnswer(checkAnswer(array[0], array[1]));
                     }
+                    if (!cell.getMessages().isEmpty())
+                        cell.getMessages().forEach(this::sendMessage);
                     if (player.isInJail()) break;
                     if (player.isBankrupt()) {
                         list = players.stream()
