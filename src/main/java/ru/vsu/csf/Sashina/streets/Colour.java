@@ -1,23 +1,26 @@
 package ru.vsu.csf.Sashina.streets;
 
+import java.awt.*;
 import java.util.Locale;
 
 public enum Colour {
-    BROWN("Brown"),
-    CYAN("Cyan"),
-    PINK("Pink"),
-    ORANGE("Orange"),
-    RED("Red"),
-    YELLOW("Yellow"),
-    GREEN("Green"),
-    BLUE("Blue"),
-    RL("Railroad"),
-    E("Energy");
+    BROWN("Brown", new Color(149, 49, 1)),
+    CYAN("Cyan", new Color(60, 174, 233)),
+    PINK("Pink", new Color(191, 23, 87)),
+    ORANGE("Orange", new Color(240, 136, 17)),
+    RED("Red", new Color(227, 32, 32)),
+    YELLOW("Yellow", new Color(235, 232, 56)),
+    GREEN("Green", new Color(40, 199, 38)),
+    BLUE("Blue", new Color(45, 15, 191)),
+    RL("Railroad", new Color(0, 0, 0)),
+    E("Energy", new Color(222, 131, 222));
 
     private String code;
+    private Color color;
 
-    Colour (String code) {
+    Colour (String code, Color color) {
         this.code = code;
+        this.color = color;
     }
 
     public static Colour fromStringToColour(String s) throws Exception{
@@ -39,5 +42,7 @@ public enum Colour {
         return code;
     }
 
-
+    public Color getColor() {
+        return color;
+    }
 }

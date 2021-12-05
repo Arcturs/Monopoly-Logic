@@ -17,14 +17,17 @@ public class ColouredStreet extends Streets{
         this.priceWithHotel = pWHotel;
     }
 
+    @Override
     public int getHousePrice() {
         return housePrice;
     }
 
+    @Override
     public int[] getPriceWithHouses() {
         return priceWithHouses;
     }
 
+    @Override
     public int getHotelPrice() {
         return hotelPrice;
     }
@@ -33,6 +36,7 @@ public class ColouredStreet extends Streets{
         return priceWithHotel;
     }
 
+    @Override
     public boolean isHotelBuilt () {
         return hotel;
     }
@@ -41,6 +45,7 @@ public class ColouredStreet extends Streets{
         hotel = true;
     }
 
+    @Override
     public void setHotel (boolean flag) {
         hotel = flag;
     }
@@ -49,10 +54,12 @@ public class ColouredStreet extends Streets{
         this.house = house;
     }
 
+    @Override
     public boolean isHouse() {
         return house;
     }
 
+    @Override
     public void buyHouse() {
         int monopolyLevel = getMonopolyLevel() - 1;
         setRent(priceWithHouses[monopolyLevel]);
@@ -60,9 +67,11 @@ public class ColouredStreet extends Streets{
         levelUpMonopoly();
     }
 
+    @Override
     public void buyHotel() {
         buildHotel();
         setRent(getPriceWithHotel());
+        levelUpMonopoly();
     }
 
     @Override

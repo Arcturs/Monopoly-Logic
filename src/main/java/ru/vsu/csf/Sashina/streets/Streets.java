@@ -101,6 +101,34 @@ public class Streets {
 
     public void bailOther() {}
 
+    public void buyHouse() {
+    }
+
+    public void buyHotel() {
+    }
+
+    public int getHousePrice() {
+        return 0;
+    }
+
+    public int getHotelPrice() {
+        return 0;
+    }
+
+    public void setHotel(boolean flag) {}
+
+    public int[] getPriceWithHouses() {
+        return new int[0];
+    }
+
+    public boolean isHouse() {
+        return false;
+    }
+
+    public boolean isHotelBuilt() {
+        return false;
+    }
+
     public void onBail() {
         setMonopolyLevel(0);
         setRent(getBasicRent());
