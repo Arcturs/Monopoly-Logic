@@ -1,17 +1,18 @@
 package ru.vsu.csf.Sashina.game;
 
 import ru.vsu.csf.Sashina.cell.*;
+import ru.vsu.csf.Sashina.cell.streetCell.StreetCell;
 import ru.vsu.csf.Sashina.player.Player;
 import ru.vsu.csf.Sashina.streets.Colour;
 import ru.vsu.csf.Sashina.streets.ColouredStreet;
 import ru.vsu.csf.Sashina.streets.OtherStreet;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class GameBoard {
     private Cell[] gameBoard = CellInitializer();
+    private GameInterface gameInterface;
 
     private static Cell[] CellInitializer () {
         Cell[] cells = new Cell[40];
@@ -137,7 +138,7 @@ public class GameBoard {
         cells[24] = cell;
 
         cell = new StreetCell(25);
-        cell.setStreet(new OtherStreet("B. & O. Railroad", 200, 100, 25, Colour.RL));
+        cell.setStreet(new OtherStreet("B&O Railroad", 200, 100, 25, Colour.RL));
         cells[25] = cell;
 
         cell = new StreetCell(26);
@@ -211,7 +212,11 @@ public class GameBoard {
         return cells;
     }
 
-    public GameBoard () {}
+    public GameBoard() {}
+
+    public GameBoard (GameInterface gameInterface) {
+        this.gameInterface = gameInterface;
+    }
 
     public Cell[] getGameBoard() {
         return gameBoard;
@@ -219,6 +224,10 @@ public class GameBoard {
 
     public GameBoard getGameBoardObject() {
         return this;
+    }
+
+    public GameInterface getGameInterface() {
+        return gameInterface;
     }
 
     public Cell getCell(int position) {
@@ -246,6 +255,24 @@ public class GameBoard {
                 sendMessage(value.getStreet().getName() + " {" + value.getStreet().getMonopolyLevel()
                         + "} " + ", " );
             }
+        }
+        gameInterface.getStreetOnBail(player);
+    }
+
+    public void setStreetOnBail(String colour, int streetNumber, Player player) {
+        try {
+            Colour c = Colour.fromStringToColour(colour);
+            List<Cell> list = player.getMonopolyControl().get(c);
+            Cell cell = list.get(streetNumber - 1);
+            if (cell.getStreet().getMonopolyLevel() >= 2) {
+                gameBoard = player.sellHousesAndHotel(gameBoard, cell);
+                sendMessage("You sold all houses and hotel.");
+            }
+            gameBoard = player.setStreetOnBail(gameBoard, cell);
+            String message = java.text.MessageFormat.format("You set your street on bail. You got {0}M.", cell.getStreet().getCollateralPrice());
+            sendMessage(message);
+        } catch (Exception e) {
+            sendMessage("There is a mistake, please try again!");
         }
     }
 
@@ -282,6 +309,16 @@ public class GameBoard {
         }
     }
 
+    public void releaseStreetFromPledge(int streetNumber, Player player) {
+        List<Cell> streets = player.getOnBailStreets();
+        Cell street = streets.get(streetNumber - 1);
+        if (player.getCash() < street.getStreet().getCollateralPrice() * 1.1) {
+            sendMessage("You can''t release this street from pledge");
+            return;
+        }
+        gameBoard = player.releaseFromPledge(gameBoard, street);
+    }
+
     protected void releaseStreetFromPledge (Player player) {
         if (player.getCash() <= 0 && player.getMonopolyControl().isEmpty()) {
             gameBoard = player.bankrupt(gameBoard);
@@ -309,6 +346,22 @@ public class GameBoard {
         if (answer == 1) gameBoard = player.releaseFromPledge(gameBoard, street);
     }
 
+    public void buildHouseOrHotel(int monopolyNumber, int streetNumber, Player player) {
+        List<Monopoly> monopolies = player.getMonopolies();
+        Monopoly monopoly = monopolies.get(monopolyNumber - 1);
+        if (monopoly.isCompleted()) {
+            sendMessage("You have upgraded this monopoly!");
+            return;
+        }
+        List<Cell> streets = monopoly.getStreets();
+        Cell street = streets.get(streetNumber - 1);
+        if (street.getStreet().getMonopolyLevel() == 6) {
+            sendMessage("This street has a hotel, you can't upgrade it further.");
+            return;
+        }
+        gameBoard = player.buildHouseOrHotel(gameBoard, street);
+    }
+
     protected void buildHouseOrHotel (Player player) {
         List<Monopoly> monopolies = player.getMonopolies();
         sendMessage("You can build a house or a hotel on these monopolies: ");
@@ -321,7 +374,7 @@ public class GameBoard {
             }
         }
         if (i == 0) {
-            sendMessage("You''ve upgraded all your monopolies!");
+            sendMessage("You've upgraded all your monopolies!");
             return;
         }
         int answer = checkAnswer(1, i);
@@ -331,10 +384,10 @@ public class GameBoard {
         i = 0;
         List<Cell> streets = monopoly.getStreets();
         for (Cell street : streets) {
-            if (street.getColouredStreet().getMonopolyLevel() != 6) {
+            if (street.getStreet().getMonopolyLevel() != 6) {
                 i++;
-                int price = street.getColouredStreet().getHousePrice();
-                if (street.getColouredStreet().getMonopolyLevel() == 5) price = street.getColouredStreet().getHotelPrice();
+                int price = street.getStreet().getHousePrice();
+                if (street.getStreet().getMonopolyLevel() == 5) price = street.getStreet().getHotelPrice();
                 String message = java.text.MessageFormat.format("{0}) {1} costs {2}",
                         i, street.getStreet().getName(), price);
                 sendMessage(message);
@@ -347,8 +400,8 @@ public class GameBoard {
         answer = checkAnswer(1, i);
         Cell street = streets.get(answer - 1);
 
-        int price = street.getColouredStreet().getHousePrice();
-        if (street.getColouredStreet().getMonopolyLevel() == 5) price = street.getColouredStreet().getHotelPrice();
+        int price = street.getStreet().getHousePrice();
+        if (street.getStreet().getMonopolyLevel() == 5) price = street.getStreet().getHotelPrice();
         if (player.getCash() < price) {
             sendMessage("You can''t afford buying a house/hotel. Would you like to set some streets on bail?");
             sendMessage("1)Yes       2)No");
@@ -363,6 +416,18 @@ public class GameBoard {
             }
         }
         gameBoard = player.buildHouseOrHotel(gameBoard, street);
+    }
+
+    public void sellHouseOrHotel (int monopolyNumber, int streetNumber, Player player) {
+        List<Monopoly> monopolies = player.getMonopolies();
+        Monopoly monopoly = monopolies.get(monopolyNumber - 1);
+        List<Cell> streets = monopoly.getStreets();
+        Cell street = streets.get(streetNumber - 1);
+        if (street.getStreet().getMonopolyLevel() < 2) {
+            sendMessage("There are no houses on this street.");
+            return;
+        }
+        gameBoard = player.sellHouseOrHotel(gameBoard, street);
     }
 
     protected void sellHouseOrHotel (Player player) {
@@ -409,7 +474,7 @@ public class GameBoard {
     }
 
     public int checkAnswer (int a, int b) {
-        return 0;
+        return gameInterface.checkAnswer(a, b);
     }
 
     public void bailOrSell (Player player) {
@@ -426,5 +491,7 @@ public class GameBoard {
         }
     }
 
-    public void sendMessage(String message) {}
+    public void sendMessage(String message) {
+        gameInterface.sendMessage(message);
+    }
 }

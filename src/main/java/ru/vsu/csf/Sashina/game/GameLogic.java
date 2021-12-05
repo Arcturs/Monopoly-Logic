@@ -8,18 +8,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //TODO: механика аукциона и обмена
-//TODO: сделать интерфейс, через который взимодействует консоль
-//TODO: boolean переписать с логическими высказываниями
-//TODO: стратегии???
 
 public class GameLogic extends GameBoard{
     private List<Player> players;
+
+    public GameLogic(GameInterface gameInterface) {
+        super(gameInterface);
+    }
 
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
 
-    private int throwDice () {
+    public int throwDice () {
         Random rnd = new Random();
         return rnd.nextInt(6) + 1;
     }
@@ -86,6 +87,7 @@ public class GameLogic extends GameBoard{
         }
         sendMessage("7) Finish the game.");
         actions[6] = true;
+        getGameInterface().gameMenu(player, actions);
     }
 
     public void actions(int action, Player player, boolean[] actions) {
@@ -140,19 +142,8 @@ public class GameLogic extends GameBoard{
                         break;
                     }
 
-                    Cell cell = getCell(player.changePlayerPosition(n1 + n2));
-                    message = java.text.MessageFormat.format("You moved to {0}.", cell.getName());
-                    sendMessage(message);
+                    performActionWithCell(player, n1, n2);
 
-                    cell.doAction(getGameBoardObject(), player, n1 + n2);
-                    int[] array = cell.sendAnswer();
-                    if (array.length != 0 && array[1] != 0 && array[0] != 0) {
-                        if (!cell.getMessages().isEmpty())
-                            cell.getMessages().forEach(this::sendMessage);
-                        cell.getAnswer(checkAnswer(array[0], array[1]));
-                    }
-                    if (!cell.getMessages().isEmpty())
-                        cell.getMessages().forEach(this::sendMessage);
                     if (player.isInJail()) break;
                     if (player.isBankrupt()) {
                         list = players.stream()
@@ -183,4 +174,25 @@ public class GameLogic extends GameBoard{
         setGameBoard(player.bankrupt(getGameBoard()));
     }
 
+    private void operateWithAnswer(Cell cell) {
+        int[] array = cell.sendAnswer();
+        if (array.length != 0 && array[1] != 0 && array[0] != 0) {
+            if (!cell.getMessages().isEmpty())
+                cell.getMessages().forEach(this::sendMessage);
+            cell.getAnswer(checkAnswer(array[0], array[1]));
+        }
+        if (!cell.getMessages().isEmpty())
+            cell.getMessages().forEach(this::sendMessage);
+    }
+
+    private void performActionWithCell(Player player, int n1, int n2) {
+        Cell cell = getCell(player.changePlayerPosition(n1 + n2));
+        String message = java.text.MessageFormat.format("You moved to {0}.", cell.getName());
+        sendMessage(message);
+
+        cell.doAction(getGameBoardObject(), player, n1 + n2);
+        operateWithAnswer(cell);
+        cell.getMessages().clear();
+        operateWithAnswer(cell); //на случай, если при покупке не будет хватать денег
+    }
 }
