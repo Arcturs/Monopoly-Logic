@@ -33,14 +33,13 @@ public class Monopoly {
 
     public boolean isCompleted () {
         if (street3 != null)
-            return street1.getColouredStreet().isHotelBuilt() && street2.getColouredStreet().isHotelBuilt() && street3.getColouredStreet().isHotelBuilt();
-        return street1.getColouredStreet().isHotelBuilt() && street2.getColouredStreet().isHotelBuilt();
+            return street1.getStreet().isHotelBuilt() && street2.getStreet().isHotelBuilt() && street3.getStreet().isHotelBuilt();
+        return street1.getStreet().isHotelBuilt() && street2.getStreet().isHotelBuilt();
     }
 
     public boolean hasAnyHouse () {
-        //замес таков, что я очень надеюсь, что можно будет передавать прямо улицу
-        if (street3 != null) return street1.getColouredStreet().isHouse() || street2.getColouredStreet().isHouse()
-                || street3.getColouredStreet().isHouse();
-        else return street1.getColouredStreet().isHouse() || street2.getColouredStreet().isHouse();
+        if (street3 != null) return street1.getStreet().isHouse() || street2.getStreet().isHouse()
+                || street3.getStreet().isHouse();
+        else return street1.getStreet().isHouse() || street2.getStreet().isHouse();
     }
 }

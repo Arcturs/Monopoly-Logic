@@ -1,5 +1,6 @@
 package ru.vsu.csf.Sashina.cell;
 
+import ru.vsu.csf.Sashina.cell.streetCell.StreetActions;
 import ru.vsu.csf.Sashina.game.GameBoard;
 import ru.vsu.csf.Sashina.player.Player;
 import ru.vsu.csf.Sashina.streets.*;
@@ -14,7 +15,6 @@ public class Cell{
     private final int position;
 
     private Streets street;
-    private ColouredStreet colouredStreet;
 
     public Cell (TypeOfCell type, int number) {
         this.type = type;
@@ -38,7 +38,6 @@ public class Cell{
 
     public void setStreet(ColouredStreet street) {
         this.street = street;
-        colouredStreet = street;
     }
 
     public void setStreet(OtherStreet street) {
@@ -49,16 +48,8 @@ public class Cell{
         this.street = street;
     }
 
-    public TypeOfCell getType() {
-        return type;
-    }
-
     public Streets getStreet () {
         return street;
-    }
-
-    public ColouredStreet getColouredStreet () {
-        return colouredStreet;
     }
 
     public int getPosition() {
@@ -70,7 +61,13 @@ public class Cell{
         else return type.getCode();
     }
 
+    public TypeOfCell getType() {
+        return type;
+    }
+
     public void doAction (GameBoard gb, Player player, int dice) {}
+
+    public void doAction (StreetActions action, GameBoard gb, Player player, int dice) {}
 
     public List<String> getMessages() {return new ArrayList<>();}
 
