@@ -113,10 +113,9 @@ public class Player {
                 if (c.equals(cell)) bailOneStreet(cells, cell);
                 else {
                     cell.getStreet().bailOther();
-                    Cell newCell = new Cell(TypeOfCell.STREET, cell.getPosition());
-                    newCell.setStreet(cell.getStreet());
-                    cells[newCell.getPosition()] = newCell;
-                    newList.add(newCell);
+                    c.setStreet(cell.getStreet());
+                    cells[c.getPosition()] = c;
+                    newList.add(c);
                 }
             }
         } else {
@@ -140,7 +139,7 @@ public class Player {
 
     public Cell[] buildHouseOrHotel (Cell[] cells, Cell cell) {
         Cell newCell = new Cell(TypeOfCell.STREET, cell.getPosition());
-        ColouredStreet street = cell.getColouredStreet();
+        Streets street = cell.getStreet();
         int monopolyLevel = street.getMonopolyLevel() - 1;
         if (monopolyLevel == 4) {
             street.buyHotel();
@@ -149,7 +148,6 @@ public class Player {
             street.buyHouse();
             getMoney(-street.getHousePrice());
         }
-        street.levelUpMonopoly();
         newCell.setStreet(street);
 
         List<Monopoly> newList = new ArrayList<>();
@@ -173,9 +171,9 @@ public class Player {
 
     public Cell[] sellHousesAndHotel (Cell[] cells, Cell cell) {
         for (Monopoly monopoly : monopolies) {
-            if (monopoly.getColour() == cell.getColouredStreet().getColour()) {
+            if (monopoly.getColour() == cell.getStreet().getColour()) {
                 for (Cell c : monopoly.getStreets()) {
-                    ColouredStreet s = c.getColouredStreet();
+                    Streets s = c.getStreet();
                     Cell newCell = new Cell(TypeOfCell.STREET, c.getPosition());
                     s.bailOther();
                     newCell.setStreet(s);
@@ -191,7 +189,7 @@ public class Player {
 
     public Cell[] sellHouseOrHotel (Cell[] cells, Cell cell) {
         Cell newCell = new Cell(TypeOfCell.STREET, cell.getPosition());
-        ColouredStreet street = cell.getColouredStreet();
+        Streets street = cell.getStreet();
         street.decreaseMonopoly();
 
         if (street.getMonopolyLevel() == 4) street.setHotel(false);
@@ -268,18 +266,16 @@ public class Player {
 
     private void bailOneStreet(Cell[] cells, Cell cell) {
         cell.getStreet().onBail();
-        Cell newCell = new Cell(TypeOfCell.STREET, cell.getPosition());
-        newCell.setStreet(cell.getStreet());
-        cells[newCell.getPosition()] = newCell;
+        cell.setStreet(cell.getStreet());
+        cells[cell.getPosition()] = cell;
         getMoney(cell.getStreet().getCollateralPrice());
     }
 
     private void sellStreet(Cell[] cells, Cell cell) {
-        Cell newCell = new Cell(TypeOfCell.STREET, cell.getPosition());
         Streets s = cell.getStreet();
         s.sell();
-        newCell.setStreet(s);
-        cells[newCell.getPosition()] = newCell;
+        cell.setStreet(s);
+        cells[cell.getPosition()] = cell;
     }
 
     private void buyStreet(List<Cell> list, Cell[] cells, Cell cell, boolean flag) {
@@ -289,11 +285,10 @@ public class Player {
         for (Cell c : list) {
             Streets s = c.getStreet();
             s.buy();
-            Cell newCell = new Cell(TypeOfCell.STREET, c.getPosition());
-            newCell.setStreet(s);
-            cells[newCell.getPosition()] = newCell;
-            newList.add(newCell);
-            listForMonopolies.add(newCell);
+            c.setStreet(s);
+            cells[c.getPosition()] = c;
+            newList.add(c);
+            listForMonopolies.add(c);
         }
 
         Streets street = cell.getStreet();
